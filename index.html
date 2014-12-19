@@ -1,0 +1,156 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Chat</title>
+		<script>
+			var currentPage = null;
+			var containerElement = null;
+			
+			function createPage()
+			{
+				var page = new Object();
+				page.element = null;
+				page.update = null;
+				return page;
+			}
+			
+			var accountPage = createPage();
+			var peoplePage = createPage();
+			var conversationsPage = createPage();
+			var aboutPage = createPage();
+			
+			function changeMode(mode)
+			{
+				
+				while (containerElement.firstChild)
+				{
+					containerElement.removeChild(containerElement.firstChild);
+				}
+				switch(mode)
+				{
+				case 'account':
+					containerElement.appendChild(accountPage.element);
+					currentPage = accountPage;
+					break;
+				case 'people':
+					containerElement.appendChild(peoplePage.element);
+					currentPage = peoplePage;
+					break;
+				case 'conversations':
+					containerElement.appendChild(conversationsPage.element);
+					currentPage = conversationsPage;
+					break;
+				case 'about':
+					containerElement.appendChild(aboutPage.element);
+					currentPage = aboutPage;
+					break;
+				default:
+					currentPage = null;
+					break;
+				}
+			}
+			
+			window.onload = function()
+			{
+				containerElement = document.getElementById("content-container");
+				accountPage.element = document.getElementById("account-page");
+				peoplePage.element = document.getElementById("people-page");
+				conversationsPage.element = document.getElementById("conversations-page");
+				aboutPage.element = document.getElementById("about-page");
+				changeMode('about');
+			};
+			
+		</script>
+		<style>
+			html
+			{
+				margin: 0;
+				padding: 0;
+				font-family: "droid sans", "dejavu sans", sans-serif;
+			}
+			
+			body
+			{
+				margin: 0;
+				padding: 0;
+			}
+			
+			div
+			{
+				margin: 0;
+				padding: 0;
+			}
+			
+			#content-container
+			{
+				font-size: 1.2vw;
+				margin-left: 6%;
+				width: 94%;
+				display: inline-block;
+			}
+			
+			.control-pannel
+			{
+				left: 0;
+				top: 0;
+				width: 25%;
+				height: 100%;
+				position: fixed;
+				display: inline-block;
+				background-color: #4400aa;
+				transform: translateX(-80%);
+				transition: transform 1s ease;
+			}
+			.control-pannel:hover
+			{
+				transform: translateX(0);
+			}
+			
+			.control-element-list
+			{
+				margin-top: 4%;
+				margin-left: 3%;
+				margin-right: 20%;
+				height: 100%;
+				width: 80%;
+				display: inline-block;
+			}
+			
+			.control-element
+			{
+				color: #cccccc;
+				text-align: left;
+				padding: 4px 8px;
+				font-size: 2.4vw;
+				cursor: pointer;
+			}
+			.control-element:hover
+			{
+				color: #ffffff;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="content-container">
+		</div>
+		<div class="control-pannel">
+			<div class="control-element-list">
+				<div class="control-element" onclick="changeMode('account')">
+					Account
+				</div>
+				<div class="control-element" onclick="changeMode('people')">
+					People
+				</div>
+				<div class="control-element" onclick="changeMode('conversations')">
+					Conversations
+				</div>
+				<div class="control-element" onclick="changeMode('about')">
+					About
+				</div>
+			</div>
+		</div>
+		<div id="about-page">
+			<h1>Hello, Browser!</h1>
+		</div>
+	</body>
+</html>
