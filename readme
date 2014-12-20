@@ -1,3 +1,11 @@
+MicroChat is an experimental HTTP server allows you to write messages
+
+Build:
+$ cd /path/to/microchat/
+$ make
+
+Run:
+$ ./run
 
 Required packages:
 	make
@@ -11,3 +19,7 @@ All privileges on microchatdb must be granted to microchat@localhost
 mysql> create user microchat@localhost;
 mysql> create database microchatdb;
 mysql> grant all on microchatdb.* to microchat@localhost;
+
+To access use the server
+enter in your browser:
+localhost:8888

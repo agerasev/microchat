@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>MicroChat</title>
+		<link rel="stylesheet" href="style.css"/>
+		<script src="request.js"></script>
+		<script src="engine.js"></script>
+	</head>
+	<div id="about-page">
+		<h1>Hello, Browser!</h1>
+	</div>
+	<body>
+		<div id="content-container">
+			
+		</div>
+		<div id="control-pannel">
+			<div id="control-element-list">
+				<div 
+					class="control-element" 
+					id="account-info" 
+					onclick="display('account')"
+				>
+					Alexey Gerasev
+				</div>
+				<div class="control-element" onclick="display('people')">
+					People
+				</div>
+				<div class="control-element" onclick="display('conversations')">
+					Conversations
+				</div>
+				<div class="control-element" onclick="display('about')">
+					About
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,6 +1,11 @@
+SRCDIR = src
+OBJDIR = obj
 HEADERS = daemon.hpp
 SOURCES = main.cpp
-OBJ = $(SOURCES:%.cpp=%.cpp.o)
+
+OBJ = $(SOURCES:%.cpp=$(OBJDIR)/%.cpp.o)
+SRC = $(SOURCES:%=$(SRCDIR)/%)
+HDR = $(HEADERS:%=$(SRCDIR)/%)
 BIN = run
 
 all: $(BIN)
@@ -8,5 +13,5 @@ all: $(BIN)
 $(BIN) : $(OBJ)
 	g++ -Wall -lmicrohttpd $^ -o $@
 
-%.cpp.o: %.cpp $(HEADERS)
+$(OBJDIR)/%.cpp.o: $(SRCDIR)/%.cpp $(HDR)
 	g++ -Wall -c -std=c++11 $< -o $@
