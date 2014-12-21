@@ -1,7 +1,10 @@
 SRCDIR = src
 OBJDIR = obj
-HEADERS = daemon.hpp
-SOURCES = main.cpp
+HEADERS = \
+	daemon.hpp \
+	database.hpp
+SOURCES = \
+	main.cpp
 
 OBJ = $(SOURCES:%.cpp=$(OBJDIR)/%.cpp.o)
 SRC = $(SOURCES:%=$(SRCDIR)/%)
@@ -11,7 +14,7 @@ BIN = run
 all: $(BIN)
 
 $(BIN) : $(OBJ)
-	g++ -Wall -lmicrohttpd $^ -o $@
+	g++ -Wall -lmicrohttpd -lmysqlcppconn $^ -o $@
 
 $(OBJDIR)/%.cpp.o: $(SRCDIR)/%.cpp $(HDR)
 	g++ -Wall -c -std=c++11 $< -o $@
