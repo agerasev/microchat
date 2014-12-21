@@ -104,7 +104,7 @@ private:
 		
 		int columns_number = resmd->getColumnCount();
 		Row header(columns_number);
-		for (int i = 1; i < columns_number; i++) {
+		for (int i = 1; i <= columns_number; i++) {
 			header.setValue(i-1,resmd->getColumnName(i));
 		}
 		Table *table = new Table(header);
@@ -144,16 +144,21 @@ public:
 	}
 	
 	/* Returns heap-allocated table which must be deleted */
-	Table *executeQuery(const char *query)
+	Table *executeQuery(const string &query)
 	{
-		ResultSet *res = stmt->executeQuery(query);
+		ResultSet *res = stmt->executeQuery(query.data());
 		Table *table = convert(res);
 		delete res;
 		return table;
 	}
 	
-	bool execute(const char *query)
+	bool execute(const string &query)
 	{
-		return stmt->execute(query);
+		return stmt->execute(query.data());
+	}
+	
+	void commit()
+	{
+		con->commit();
 	}
 };

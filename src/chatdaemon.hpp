@@ -1,6 +1,7 @@
 #pragma once
 
 #include "daemon.hpp"
+#include "database.hpp"
 
 class ChatDaemon : public Daemon
 {
@@ -10,9 +11,13 @@ private:
 		printf ("%s: %s\n", key, value);
 		return MHD_YES;
 	}
+	
+private:
+	Database *db;
 
 public:
-	ChatDaemon() : Daemon()
+	ChatDaemon(Database *database) : 
+		Daemon(), db(database)
 	{
 		
 	}
@@ -29,12 +34,24 @@ public:
 		
 		std::string path(url);
 		
-		if(path == "/")
+		if(path == "/" || path == "/index.html")
 		{
-			path = "/index.html";
+			sendFile(con,"res/index.html","text/html");
 		}
-		
-		sendFile(con,("res" + path).data());
+		else
+		if(path == "/engine.js" || path == "/request.js")
+		{
+			sendFile(con,("res" + path).data(),"application/javascript");
+		}
+		else
+		if(path == "/style.css")
+		{
+			sendFile(con,("res" + path).data(),"text/css");
+		}
+		else
+		{
+			sendFile(con,"res/notfound.html","text/html");
+		}
 		
 		return YES;
 	}
@@ -44,8 +61,63 @@ public:
 		printf ("POST responded\n");
 		// MHD_get_connection_values (con, MHD_HEADER_KIND, &print_out_key, NULL);
 		
-		sendData(con,data,size);
+		cout << "+ stert responding" << endl;
 		
+		std::string query;
+		std::string answer;
+		try
+		{
+			query = std::string(static_cast<const char*>(data), size);
+			
+			cout << "+ execute query" << endl;
+			Database::Table *table = db->executeQuery(query);
+			db->commit();
+			
+			cout << "+ construct answer" << endl;
+			answer = "[";
+			answer += "[";
+			const Database::Row *row = table->getHeader();
+			for(int i = 0; i < row->getSize(); ++i)
+			{
+				if(i)
+				{
+					answer += ",";
+				}
+				answer += '\'' + row->getValue(i) + '\'';
+			}
+			answer += "]";
+			for(int j = 0; j < table->getRowsNumber(); ++j)
+			{
+				answer += ",";
+				answer += "[";
+				const Database::Row *row = table->getRow(j);
+				for(int i = 0; i < row->getSize(); ++i)
+				{
+					if(i)
+					{
+						answer += ",";
+					}
+					answer += '\'' + row->getValue(i) + '\'';
+				}
+				answer += "]";
+			}
+			answer += "]";
+			delete table;
+		}
+		catch(SQLException &e)
+		{
+			cout << "+ catch exception" << endl;
+			answer = std::string(e.what());
+			if(!answer.size())
+			{
+				answer = "Done";
+			}
+		}
+		
+		cout << "+ send data" << endl;
+		sendData(con,const_cast<char*>(answer.data()),answer.size(),"text/plain");
+		
+		cout << "+ return" << endl;
 		return YES;
 	}
 };

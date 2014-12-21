@@ -1,6 +1,3 @@
-var currentPage = null;
-var containerElement = null;
-
 function createPage()
 {
 	var page = new Object();
@@ -9,50 +6,103 @@ function createPage()
 	return page;
 }
 
-var accountPage = createPage();
-var peoplePage = createPage();
-var conversationsPage = createPage();
-var aboutPage = createPage();
+function formTable(array_string)
+{
+	var array;
+	if(array_string[0] == '[')
+	{
+		eval("array = " + array_string + ";");
+	}
+	else
+	{
+		return array_string;
+	}
+	if(!Array.isArray(array))
+	{
+		return array;
+	}
+	var table = "<table border='1'>";
+	var jlen = array.length;
+	for(var j = 0; j < jlen; ++j)
+	{
+		table += "<tr>";
+		var subarray = array[j];
+		if(!Array.isArray(subarray))
+		{
+			table += subarray;
+		}
+		else
+		{
+			var ilen = subarray.length;
+			for(var i = 0; i < ilen; ++i)
+			{
+				table += "<td>"
+				table += subarray[i];
+				table += "</td>"
+			}
+		}
+		
+		table += "</tr>";
+	}
+	table += "</table>";
+	
+	return table;
+}
+
+function createMessagePage(convId)
+{
+	var mpage = createPage();
+	mpage.convId = convId;
+	mpage.submitText = function()
+	{
+		var textarea = document.getElementById("input-text-area");
+		if(textarea.value.length > 0)
+		{
+			sendRequest(
+				document.URL + "/index.html",
+				textarea.value,
+				function(req)
+				{
+					document.getElementById("messages-history").innerHTML += "<div class='message'>" + formTable(req.responseText) + "</div>";
+				}
+			);
+			textarea.value = "";
+		}
+	}
+	return mpage;
+}
+
+var currentMessagePage = null;
 
 function changeMode(mode)
 {
-	
-	while (containerElement.firstChild)
-	{
-		containerElement.removeChild(containerElement.firstChild);
-	}
 	switch(mode)
 	{
 	case 'account':
-		containerElement.appendChild(accountPage.element);
-		currentPage = accountPage;
 		break;
 	case 'people':
-		containerElement.appendChild(peoplePage.element);
-		currentPage = peoplePage;
 		break;
 	case 'conversations':
-		containerElement.appendChild(conversationsPage.element);
-		currentPage = conversationsPage;
 		break;
 	case 'about':
-		containerElement.appendChild(aboutPage.element);
-		currentPage = aboutPage;
 		break;
 	default:
-		currentPage = null;
 		break;
 	}
 }
 
+function update_placeholders()
+{
+	document.getElementById("messages-input-placeholder").style.height = document.getElementById("input-text-pannel").offsetHeight + "px";
+}
+
 window.onload = function()
 {
-	containerElement = document.getElementById("content-container");
-	accountPage.element = document.getElementById("account-page");
-	peoplePage.element = document.getElementById("people-page");
-	conversationsPage.element = document.getElementById("conversations-page");
-	aboutPage.element = document.getElementById("about-page");
-	// changeMode('about');
-	
-	sendRequest(document.URL + "/index.html","request",function(req){alert(req.responseText)});
+	currentMessagePage = createMessagePage(1);
+	update_placeholders();
 };
+
+window.onresize = function()
+{
+	update_placeholders();
+}

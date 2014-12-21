@@ -2,7 +2,9 @@ SRCDIR = src
 OBJDIR = obj
 HEADERS = \
 	daemon.hpp \
-	database.hpp
+	database.hpp \
+	chatdaemon.hpp \
+	chatdatabase.hpp
 SOURCES = \
 	main.cpp
 

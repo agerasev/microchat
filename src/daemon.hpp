@@ -166,19 +166,17 @@ public:
 		MHD_stop_daemon (_daemon);
 	}
 	
-	/* Sends heap-allocateted data
-	 * Memory will automatically released after sending
-	 * free() must not be called manually */
-	int sendData(MHD_Connection *con, void *data, int size)
+	int sendData(MHD_Connection *con, void *data, int size, const char *mime)
 	{
-		MHD_Response *response = MHD_create_response_from_buffer(size, data, MHD_RESPMEM_MUST_FREE);
+		MHD_Response *response = MHD_create_response_from_buffer(size, data, MHD_RESPMEM_MUST_COPY);
+		MHD_add_response_header (response, "Content-Type", mime);
 		int ret = MHD_queue_response(con, MHD_HTTP_OK, response);
 		MHD_destroy_response(response);
 		return ret;
 	}
 	
 	/* Sends file content */
-	int sendFile(MHD_Connection *con, const char *name)
+	int sendFile(MHD_Connection *con, const char *name, const char *mime)
 	{
 		void *page_data = nullptr;
 		int page_length = 0;
@@ -189,6 +187,7 @@ public:
 		if(page_data)
 		{
 			response = MHD_create_response_from_buffer (page_length, page_data, MHD_RESPMEM_MUST_FREE);
+			MHD_add_response_header (response, "Content-Type", mime);
 			int ret = MHD_queue_response (con, MHD_HTTP_OK, response);
 			MHD_destroy_response (response);
 			return ret;
@@ -197,6 +196,7 @@ public:
 		{
 			load_file("res/notfound.html",&page_data,&page_length);
 			response = MHD_create_response_from_buffer (page_length, page_data, MHD_RESPMEM_MUST_FREE);
+			MHD_add_response_header (response, "Content-Type", "text/html");
 			MHD_queue_response (con, 404, response);
 			MHD_destroy_response(response);
 			return MHD_YES;

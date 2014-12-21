@@ -7,11 +7,41 @@
 		<script src="request.js"></script>
 		<script src="engine.js"></script>
 	</head>
+	<!--
 	<div id="about-page">
 		<h1>Hello, Browser!</h1>
 	</div>
+	-->
 	<body>
 		<div id="content-container">
+			
+			<div id="message-page">
+				<div id="messages-history">
+				</div>
+				<div id="messages-input-placeholder">
+				</div>
+				<div id="input-text-pannel">
+					<textarea 
+						id="input-text-area"
+						onkeydown=
+						"
+							if(event.keyCode == 13)
+							{
+								currentMessagePage.submitText();
+								return false;
+							}
+						"
+					>
+					</textarea>
+					<div 
+						class="button" 
+						id="input-text-submit-button" 
+						onclick="currentMessagePage.submitText();"
+					>
+					submit
+					</div>
+				</div>
+			</div>
 			
 		</div>
 		<div id="control-pannel">

@@ -10,8 +10,9 @@
 int main ()
 {
 	printf("starting server ...\n");
-
-	ChatDaemon daemon;
+	
+	ChatDatabase database;
+	ChatDaemon daemon(&database);
 
 	printf("server started.\n");
 	

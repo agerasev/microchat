@@ -1,19 +1,21 @@
 :root
 {
-	--page-color: #ffffff;
+	--page-color: #cccccc;
 	--pannel-color: #4400aa;
-	--pannel-active-color: #6622dd;
+	--pannel-active-color: #6622cc;
+	--blank-color: #ffffff;
 	
 	--control-pannel-size: 24%;
 	--control-pannel-hide-factor: 0.2;
-	--control-pannel-size-hidden: 
-		calc(
-			var(--control-pannel-hide-factor) *
-			var(--control-pannel-size)
-		);
 	
 	--page-font-size: 1.2wv;
 	--control-pannel-font-size: 2.0vw;
+	
+	--input-text-pannel-factor: 0.16;
+	--input-text-button-factor: 0.12;
+	--input-text-margin: 8px;
+	--input-text-padding: 8px;
+	--input-text-area-border: 3px;
 }
 
 html
@@ -39,8 +41,17 @@ div
 
 #content-container
 {
-	margin-left: var(--control-pannel-size-hidden);
-	width: 100% - var(--control-pannel-size-hidden);
+	margin-left: 
+		calc(
+			var(--control-pannel-hide-factor)*
+			var(--control-pannel-size)
+		);
+	width: 
+		calc(
+			100% -
+			var(--control-pannel-hide-factor)*
+			var(--control-pannel-size)
+		);
 	display: inline-block;
 }
 
@@ -84,12 +95,95 @@ div
 	color: #ffffff;
 }
 
+.button
+{
+	background-color: var(--pannel-color);
+	color: #ffffff;
+	display: inline-block;
+	cursor: pointer;
+}
+.button:hover
+{
+	background-color: var(--pannel-active-color);
+}
+
+.message
+{
+	background-color: var(--blank-color);
+	margin: 1% 2%;
+	padding: 1% 2%;
+}
+
+textarea
+{
+	border: var(--input-text-area-border) solid #cccccc;
+	resize: none;
+}
+
 #account-info
 {
 	padding: 8% 8%;
 }
 
-#about-page
+#message-page
 {
-	display: none;
+	width: 100%;
+	height: 100%;
+}
+
+#message-history
+{
+	width: 100%;
+	display: inline-block;
+}
+
+#input-text-pannel
+{
+	background-color: var(--blank-color);
+	position: fixed;
+	bottom: 0;
+	width:
+		calc(
+			100% -
+			var(--control-pannel-hide-factor)*
+			var(--control-pannel-size)
+		);
+	height: calc(100%*var(--input-text-pannel-factor));
+	display: inline-block;
+}
+
+#input-text-area
+{
+	box-sizing: border-box;
+	position: absolute;
+	left: var(--input-text-margin);
+	top: var(--input-text-margin);
+	
+	margin: 0;
+	padding: var(--input-text-padding);
+	
+	width: calc(100%*(1 - var(--input-text-button-factor)) - 2*var(--input-text-margin));
+	height: calc(100% - 2*var(--input-text-margin));
+	
+	display: inline-block;
+}
+
+#input-text-submit-button
+{
+	box-sizing: border-box;
+	position: absolute;
+	right: var(--input-text-margin);
+	bottom: var(--input-text-margin);
+	
+	margin: 0;
+	padding: var(--input-text-padding);
+	font-size: 1.6vw;
+	
+	width: calc(100%*var(--input-text-button-factor) - 2*var(--input-text-margin));
+	height: auto;
+	
+	vertical-align: bottom;
+	text-align: center;
+	
+	display: inline-block;
 }
