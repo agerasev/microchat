@@ -1,0 +1,99 @@
+:root
+{
+	--input-text-pannel-factor: 0.16;
+	--input-text-button-factor: 0.12;
+	--input-text-margin: 8px;
+	--input-text-padding: 8px;
+	--input-text-area-border: 3px;
+}
+
+#message-page
+{
+	width: 100%;
+	height: 100%;
+	display: none;
+}
+
+#message-history
+{
+	width: 100%;
+	display: inline-block;
+}
+
+#input-text-pannel
+{
+	background-color: var(--blank-color);
+	position: fixed;
+	bottom: 0;
+	width:
+		calc(
+			100% -
+			var(--control-pannel-hide-factor)*
+			var(--control-pannel-size)
+		);
+	height: calc(100%*var(--input-text-pannel-factor));
+	display: inline-block;
+}
+
+#input-text-area
+{
+	box-sizing: border-box;
+	position: absolute;
+	left: var(--input-text-margin);
+	top: var(--input-text-margin);
+	
+	margin: 0;
+	padding: var(--input-text-padding);
+	
+	width: calc(100%*(1 - var(--input-text-button-factor)) - 2*var(--input-text-margin));
+	height: calc(100% - 2*var(--input-text-margin));
+	
+	display: inline-block;
+}
+
+#input-text-submit-button
+{
+	box-sizing: border-box;
+	position: absolute;
+	right: var(--input-text-margin);
+	bottom: var(--input-text-margin);
+	
+	margin: 0;
+	padding: var(--input-text-padding);
+	font-size: 1.6vw;
+	
+	width: calc(100%*var(--input-text-button-factor) - 2*var(--input-text-margin));
+	height: auto;
+	
+	vertical-align: bottom;
+	text-align: center;
+	
+	display: inline-block;
+}
+
+.message
+{
+	margin: 1% 2%;
+}
+
+.message-author
+{
+	color: #cccccc;
+	background-color: var(--pannel-color);
+	padding: 6px;
+}
+
+.message-text
+{
+	background-color: var(--blank-color);
+	padding: 1% 2%;
+	padding-bottom: 0;
+}
+
+.message-time
+{
+	color: #777777;
+	background-color: var(--blank-color);
+	padding: 0 6px 6px 6px;
+	text-align: right;
+}

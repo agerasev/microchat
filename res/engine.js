@@ -1,95 +1,93 @@
-function createPage()
-{
-	var page = new Object();
-	page.element = null;
-	page.update = null;
-	return page;
-}
-
-function formTable(array_string)
-{
-	var array;
-	if(array_string[0] == '[')
-	{
-		eval("array = " + array_string + ";");
-	}
-	else
-	{
-		return array_string;
-	}
-	if(!Array.isArray(array))
-	{
-		return array;
-	}
-	var table = "<table border='1'>";
-	var jlen = array.length;
-	for(var j = 0; j < jlen; ++j)
-	{
-		table += "<tr>";
-		var subarray = array[j];
-		if(!Array.isArray(subarray))
-		{
-			table += subarray;
-		}
-		else
-		{
-			var ilen = subarray.length;
-			for(var i = 0; i < ilen; ++i)
-			{
-				table += "<td>"
-				table += subarray[i];
-				table += "</td>"
-			}
-		}
-		
-		table += "</tr>";
-	}
-	table += "</table>";
-	
-	return table;
-}
-
-function createMessagePage(convId)
-{
-	var mpage = createPage();
-	mpage.convId = convId;
-	mpage.submitText = function()
-	{
-		var textarea = document.getElementById("input-text-area");
-		if(textarea.value.length > 0)
-		{
-			sendRequest(
-				document.URL + "/index.html",
-				textarea.value,
-				function(req)
-				{
-					document.getElementById("messages-history").innerHTML += "<div class='message'>" + formTable(req.responseText) + "</div>";
-				}
-			);
-			textarea.value = "";
-		}
-	}
-	return mpage;
-}
-
+var currentPage = null;
 var currentMessagePage = null;
+var updater = null;
+
+var accountPage;
+var aboutPage;
+
+function initPages()
+{
+	initPeoplePage();
+	initConversationsPage();
+	
+	initMessagePage();
+	
+	accountPage = createPage("account-page");
+	aboutPage = createPage("about-page");
+	
+	/* Account page */
+	accountPage.enable = function ()
+	{
+		this.element.style.display = "inline-block";
+		this.update();
+	};
+	accountPage.disable = function ()
+	{
+		this.element.style.display = "none";
+	};
+	accountPage.update = function ()
+	{
+		
+	};
+	
+	/* About page */
+	aboutPage.enable = function ()
+	{
+		this.element.style.display = "inline-block";
+		this.update();
+	};
+	aboutPage.disable = function ()
+	{
+		this.element.style.display = "none";
+	};
+	aboutPage.update = function ()
+	{
+		
+	}; 
+}
+
+function pushMode(mode)
+{
+	history.pushState({page: mode}, mode, '?' + mode);
+	changeMode(mode);
+}
 
 function changeMode(mode)
 {
+	if(currentPage != null)
+	{
+		currentPage.disable();
+		currentPage = null;
+	}
 	switch(mode)
 	{
 	case 'account':
+		(currentPage = accountPage).enable();
 		break;
 	case 'people':
+		(currentPage = peoplePage).enable();
 		break;
 	case 'conversations':
+		(currentPage = conversationsPage).enable();
 		break;
 	case 'about':
+		(currentPage = aboutPage).enable();
 		break;
 	default:
+		if((/^conv/).test(mode))
+		{
+			currentMessagePage.select(mode.substring(4));
+			currentPage = currentMessagePage;
+			currentPage.enable();
+		}
 		break;
 	}
 }
+
+window.onpopstate = function(event) 
+{
+	changeMode(event.state.page);
+};
 
 function update_placeholders()
 {
@@ -98,8 +96,17 @@ function update_placeholders()
 
 window.onload = function()
 {
-	currentMessagePage = createMessagePage(1);
-	update_placeholders();
+	initPages();
+	
+	pushMode("people");
+	
+	var updater = setInterval(function()
+	{
+		if(currentPage != null)
+		{
+			currentPage.update();
+		}
+	}, 20000);
 };
 
 window.onresize = function()

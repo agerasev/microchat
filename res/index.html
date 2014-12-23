@@ -4,17 +4,44 @@
 		<meta charset="utf-8">
 		<title>MicroChat</title>
 		<link rel="stylesheet" href="style.css"/>
+		<link rel="stylesheet" href="message.css"/>
+		<script src="classes.js"></script>
 		<script src="request.js"></script>
+		<script src="format.js"></script>
+		<script src="alert.js"></script>
+		<script src="sign.js"></script>
+		<script src="message-page.js"></script>
+		<script src="people-page.js"></script>
+		<script src="conversations-page.js"></script>
 		<script src="engine.js"></script>
 	</head>
-	<!--
-	<div id="about-page">
-		<h1>Hello, Browser!</h1>
-	</div>
-	-->
+	
 	<body>
+		
+		<!-- Content container -->
 		<div id="content-container">
 			
+			<!-- Account page -->
+			<div id="account-page">
+				Account page
+			</div>
+			
+			<!-- People page -->
+			<div id="people-page">
+				People page
+			</div>
+			
+			<!-- Conversations page -->
+			<div id="conversations-page">
+				Conversations page
+			</div>
+			
+			<!-- About page -->
+			<div id="about-page">
+				<h1>Hello, Browser!</h1>
+			</div>
+			
+			<!-- Message page -->
 			<div id="message-page">
 				<div id="messages-history">
 				</div>
@@ -44,25 +71,102 @@
 			</div>
 			
 		</div>
+		
+		<!-- Control pannel -->
 		<div id="control-pannel">
 			<div id="control-element-list">
 				<div 
 					class="control-element" 
 					id="account-info" 
-					onclick="display('account')"
+					onclick="pushMode('account')"
 				>
-					Alexey Gerasev
+					Anonymous
 				</div>
-				<div class="control-element" onclick="display('people')">
+				<div class="control-element" onclick="pushMode('people')">
 					People
 				</div>
-				<div class="control-element" onclick="display('conversations')">
+				<div class="control-element" onclick="pushMode('conversations')">
 					Conversations
 				</div>
-				<div class="control-element" onclick="display('about')">
+				<div class="control-element" onclick="pushMode('about')">
 					About
 				</div>
 			</div>
+		</div>
+		
+		<!-- Sign in or sign up -->
+		<div id="content-cover"></div>
+		<div id="sign-prompt">
+			<div 
+				id="register-field"
+				onkeydown=
+					"
+						if(event.keyCode == 13)
+						{
+							register();
+							return false;
+						}
+					"
+			>
+				<table class="sign-table">
+					<tr>
+						<td>Username: </td>
+						<td><input class="sign-input" type="text" id="reg-username"></td>
+					</tr>
+					<tr>
+						<td>Password: </td>
+						<td><input class="sign-input" type="password" id="reg-password_1"></td>
+					</tr>
+					<tr>
+						<td>Confirm password: </td>
+						<td><input class="sign-input" type="password" id="reg-password_2"></td>
+					</tr>
+					<tr>
+						<td>First Name: </td>
+						<td><input class="sign-input" type="text" id="reg-first_name"></td>
+					</tr>
+					<tr>
+						<td>Last Name: </td>
+						<td><input class="sign-input" type="text" id="reg-last_name"></td>
+					</tr>
+				</table>
+				<div class="button sign-button" id="reg-submit" onclick="register();">Register</div>
+			</div>
+			<div 
+				id="sign-in-field"
+				onkeydown=
+					"
+						if(event.keyCode == 13)
+						{
+							signIn();
+							return false;
+						}
+					"
+			>
+				<table class="sign-table">
+					<tr>
+						<td>Username: </td>
+						<td><input class="sign-input" type="text" id="sign-username"></td>
+					</tr>
+					<tr>
+						<td>Password: </td>
+						<td><input class="sign-input" type="password" id="sign-password"></td>
+					</tr>
+				</table>
+				<div class="button sign-button" id="sign-submit" onclick="signIn();">Sign In</div>
+			</div>
+		</div>
+		<div id="prompt-cover"></div>
+		<div id="prompt">
+			<div id="prompt-message"></div>
+			<div><input class="prompt-input" type="text" id="prompt-input"></div>
+			<div class="button" id="prompt-submit" onclick="submitPrompt();">Submit</div>
+			<div class="button" id="prompt-back" onclick="backPrompt();">Back</div>
+		</div>
+		<div id="alert-cover"></div>
+		<div id="alert">
+			<div id="alert-message"></div>
+			<div class="button" id="alert-submit" onclick="okAlert();">Ok</div>
 		</div>
 	</body>
 </html>

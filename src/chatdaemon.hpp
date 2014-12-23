@@ -1,7 +1,7 @@
 #pragma once
 
 #include "daemon.hpp"
-#include "database.hpp"
+#include "chatdatabase.hpp"
 
 class ChatDaemon : public Daemon
 {
@@ -12,11 +12,23 @@ private:
 		return MHD_YES;
 	}
 	
+	static bool checkExtension(const std::string &fn, const std::string &ext)
+	{
+		for(unsigned int i = 1; i <= ext.size(); ++i)
+		{
+			if(ext[ext.size() - i] != fn[fn.size() - i])
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	
 private:
-	Database *db;
+	ChatDatabase *db;
 
 public:
-	ChatDaemon(Database *database) : 
+	ChatDaemon(ChatDatabase *database) : 
 		Daemon(), db(database)
 	{
 		
@@ -34,19 +46,29 @@ public:
 		
 		std::string path(url);
 		
-		if(path == "/" || path == "/index.html")
+		if(path == "/")
 		{
-			sendFile(con,"res/index.html","text/html");
+			path = "/index.html";
+		}
+		
+		if(checkExtension(path,".html"))
+		{
+			sendFile(con,("res" + path).data(),"text/html");
 		}
 		else
-		if(path == "/engine.js" || path == "/request.js")
+		if(checkExtension(path,".js"))
 		{
 			sendFile(con,("res" + path).data(),"application/javascript");
 		}
 		else
-		if(path == "/style.css")
+		if(checkExtension(path,".css"))
 		{
 			sendFile(con,("res" + path).data(),"text/css");
+		}
+		else
+		if(checkExtension(path,".png"))
+		{
+			sendFile(con,("res" + path).data(),"image/png");
 		}
 		else
 		{
