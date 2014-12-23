@@ -31,5 +31,5 @@ Required packages:
 Access the server in your browser at:  
 `http://localhost:8888`
 
-The client tested only in `Firefox` browser version >= 31 
-and may be shown incorrect in other browsers
+The client tested only in browsers `Firefox >= 31` and `Chromium >= 37`
+It may be shown incorrect in other browsers

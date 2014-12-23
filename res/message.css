@@ -1,11 +1,3 @@
-:root
-{
-	--input-text-pannel-factor: 0.16;
-	--input-text-button-factor: 0.12;
-	--input-text-margin: 8px;
-	--input-text-padding: 8px;
-	--input-text-area-border: 3px;
-}
 
 #message-page
 {
@@ -22,16 +14,11 @@
 
 #input-text-pannel
 {
-	background-color: var(--blank-color);
+	background-color: #ffffff;
 	position: fixed;
 	bottom: 0;
-	width:
-		calc(
-			100% -
-			var(--control-pannel-hide-factor)*
-			var(--control-pannel-size)
-		);
-	height: calc(100%*var(--input-text-pannel-factor));
+	width: 95.2%;
+	height: 16%;
 	display: inline-block;
 }
 
@@ -39,14 +26,14 @@
 {
 	box-sizing: border-box;
 	position: absolute;
-	left: var(--input-text-margin);
-	top: var(--input-text-margin);
+	left: 1%;
+	top: 12%;
 	
 	margin: 0;
-	padding: var(--input-text-padding);
+	padding: 4px;
 	
-	width: calc(100%*(1 - var(--input-text-button-factor)) - 2*var(--input-text-margin));
-	height: calc(100% - 2*var(--input-text-margin));
+	height: 76%;
+	width: 86%;
 	
 	display: inline-block;
 }
@@ -55,14 +42,14 @@
 {
 	box-sizing: border-box;
 	position: absolute;
-	right: var(--input-text-margin);
-	bottom: var(--input-text-margin);
+	right: 1%;
+	bottom: 12%;
 	
 	margin: 0;
-	padding: var(--input-text-padding);
+	padding: 8px;
 	font-size: 1.6vw;
 	
-	width: calc(100%*var(--input-text-button-factor) - 2*var(--input-text-margin));
+	width: 10%;
 	height: auto;
 	
 	vertical-align: bottom;
@@ -78,14 +65,14 @@
 
 .message-author
 {
-	color: #cccccc;
-	background-color: var(--pannel-color);
+	color: #000000;
+	background-color: #eeeeee;
 	padding: 6px;
 }
 
 .message-text
 {
-	background-color: var(--blank-color);
+	background-color: #ffffff;
 	padding: 1% 2%;
 	padding-bottom: 0;
 }
@@ -93,7 +80,7 @@
 .message-time
 {
 	color: #777777;
-	background-color: var(--blank-color);
+	background-color: #ffffff;
 	padding: 0 6px 6px 6px;
 	text-align: right;
 }

@@ -1,17 +1,3 @@
-:root
-{
-	--page-color: #cccccc;
-	--pannel-color: #4400aa;
-	--pannel-active-color: #6622cc;
-	--blank-color: #ffffff;
-	
-	--control-pannel-size: 24%;
-	--control-pannel-hide-factor: 0.2;
-	
-	--page-font-size: 1.2wv;
-	--control-pannel-font-size: 2.0vw;
-}
-
 html
 {
 	margin: 0;
@@ -23,8 +9,8 @@ body
 {
 	margin: 0;
 	padding: 0;
-	font-size: var(--page-font-size);
-	background-color: var(--page-color);
+	font-size: 16px;
+	background-color: #cccccc;
 }
 
 div
@@ -35,17 +21,8 @@ div
 
 #content-container
 {
-	margin-left: 
-		calc(
-			var(--control-pannel-hide-factor)*
-			var(--control-pannel-size)
-		);
-	width: 
-		calc(
-			100% -
-			var(--control-pannel-hide-factor)*
-			var(--control-pannel-size)
-		);
+	margin-left: 4.8%;
+	width: 95.2%;
 	display: inline-block;
 }
 
@@ -53,15 +30,12 @@ div
 {
 	left: 0;
 	top: 0;
-	width: var(--control-pannel-size);
+	width: 24%;
 	height: 100%;
 	position: fixed;
 	display: inline-block;
-	background-color: var(--pannel-color);
-	transform: 
-		translateX(calc(
-			100%*(var(--control-pannel-hide-factor) - 1)
-		));
+	background-color: #4400aa;
+	transform: translateX(-80%);
 	transition: transform 1s ease;
 }
 #control-pannel:hover
@@ -81,7 +55,7 @@ div
 	color: #cccccc;
 	text-align: left;
 	padding: 2% 8%;
-	font-size: var(--control-pannel-font-size);
+	font-size: 26px;
 	cursor: pointer;
 }
 .control-element:hover
@@ -92,19 +66,19 @@ div
 .button
 {
 	padding: 6px;
-	background-color: var(--pannel-color);
+	background-color: #4400aa;
 	color: #ffffff;
 	display: inline-block;
 	cursor: pointer;
 }
 .button:hover
 {
-	background-color: var(--pannel-active-color);
+	background-color: #6622cc;
 }
 
 textarea
 {
-	border: var(--input-text-area-border) solid #cccccc;
+	border: 3px solid #cccccc;
 	resize: none;
 }
 
@@ -150,14 +124,14 @@ textarea
 	display: inline-block; 
 	vertical-align: top; 
 	width: 160px;
-	background-color: var(--blank-color);
+	background-color: #ffffff;
 }
 
 .unit-header
 {
 	margin: 0;
 	color: #cccccc;
-	background-color: var(--pannel-color);
+	background-color: #4400aa;
 	padding: 6px;
 	height: auto;
 	text-align: center;
@@ -244,7 +218,7 @@ textarea
 	position: fixed;
 	right: 22%;
 	top: 12%;
-	background-color: var(--blank-color);
+	background-color: #ffffff;
 	border: 3px solid #dddddd;
 	box-sizing: border-box;
 	padding: 10px;
@@ -259,7 +233,7 @@ textarea
 	position: fixed;
 	left: 22%;
 	top: 12%;
-	background-color: var(--blank-color);
+	background-color: #ffffff;
 	border: 3px solid #dddddd;
 	box-sizing: border-box;
 	padding: 10px;
@@ -277,7 +251,7 @@ textarea
 
 input
 {
-	border: var(--input-text-area-border) solid #cccccc;
+	border: 3px solid #cccccc;
 }
 
 .sign-input
@@ -297,7 +271,7 @@ input
 	position: fixed;
 	left: 20%;
 	top: 30%;
-	background-color: var(--blank-color);
+	background-color: #ffffff;
 	border: 3px solid #dddddd;
 	box-sizing: border-box;
 	padding: 10px;
@@ -313,7 +287,7 @@ input
 	position: fixed;
 	left: 20%;
 	top: 30%;
-	background-color: var(--blank-color);
+	background-color: #ffffff;
 	border: 3px solid #dddddd;
 	box-sizing: border-box;
 	padding: 10px;

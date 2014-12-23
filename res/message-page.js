@@ -18,9 +18,9 @@ function initMessagePage()
 	
 	currentMessagePage.update = function ()
 	{
-		if(scroll == null)
+		if(currentMessagePage.scroll == null)
 		{
-			this.scroll = (document.documentElement.scrollTop + document.documentElement.clientHeight) == document.body.scrollHeight;
+			this.scroll = (Math.max(document.body.scrollTop,document.documentElement.scrollTop) + window.innerHeight) >= document.body.scrollHeight;
 		}
 		
 		sendRequest(
