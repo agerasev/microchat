@@ -4,17 +4,18 @@ MicroChat is a HTTP server with HTML client which allows people write messages t
 
 ---
 
-1. Build:  
-`$ cd /path/to/microchat/`  
-`$ make`  
+0. Go to MicroChat directory:  
+`$ cd /path/to/microchat/`
+1. Build server:  
+`$ make`
 2. Prepare MySQL database:  
-`$ ./setup.sh`
+`$ ./setupdb.sh`
 3. Run:  
-`$ ./run`  
+`$ ./run`
 
 ---
 
-To access the server enter in your browser:  
+Access the server in your browser at:  
 `http://localhost:8888`
 
 ---
@@ -24,12 +25,5 @@ Required packages:
 + `g++`  
 + `libmicrohttpd-dev`  
 + `mysql-server`  
++ `mysql-client`  
 + `libmysqlcppconn-dev`  
-
----
-
-MySQL database must have user `microchat@localhost` and `microchatdb` database  
-All privileges on `microchatdb` must be granted to `microchat@localhost`  
-`mysql> create user microchat@localhost;`  
-`mysql> create database microchatdb;`  
-`mysql> grant all on microchatdb.* to microchat@localhost;`  
