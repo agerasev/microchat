@@ -121,3 +121,10 @@ function formMessages(array_string)
 		["class='message-author'","class='message-text'","class='message-time'"]
 	);
 }
+
+function getLastTime(array_string)
+{
+	var array;
+	eval("array = " + array_string + ";");
+	return array[array.length-1][3];
+}

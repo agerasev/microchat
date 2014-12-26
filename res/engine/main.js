@@ -98,7 +98,25 @@ window.onload = function()
 {
 	initPages();
 	
-	pushMode("people");
+	if(window.location.search != "")
+	{
+		pushMode(window.location.search.slice(1));
+	}
+	else
+	{
+		pushMode("people");
+	}
+	
+	if(document.cookie.match(/username=[^;]*/) != null)
+	{
+		var username = document.cookie.match(/username=[^;]*/)[0].replace("username=","");
+		document.getElementById("sign-username").value = username;
+		if(document.cookie.match(/password=[^;]*/) != null)
+		{
+			var password = document.cookie.match(/password=[^;]*/)[0].replace("password=","");
+			setUser(username,password);
+		}
+	}
 	
 	var updater = setInterval(function()
 	{
@@ -106,7 +124,7 @@ window.onload = function()
 		{
 			currentPage.update();
 		}
-	}, 20000);
+	}, 1000);
 };
 
 window.onresize = function()

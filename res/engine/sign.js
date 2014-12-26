@@ -25,6 +25,11 @@ function setUser(username,password)
 				document.getElementById("account-info").innerHTML = array[1][1] + " " + array[1][2];
 				
 				currentUser = createUser(array[1][0],username,password);
+				hideCover();
+				
+				var date = new Date(new Date().getTime() + 365*24*60*60*1000);
+				document.cookie = "username=" + username + "; path=/; expires=" + date.toUTCString();
+				document.cookie = "password=" + password + "; path=/; expires=" + date.toUTCString();
 			}
 			else
 			{
@@ -60,7 +65,6 @@ function signIn()
 			if((/1']]$/).test(req.responseText))
 			{
 				setUser(document.getElementById("sign-username").value,document.getElementById("sign-password").value);
-				hideCover();
 			}
 			else
 			if((/0']]$/).test(req.responseText))
@@ -101,7 +105,6 @@ function register()
 				setUser(document.getElementById("reg-username").value,document.getElementById("reg-password_1").value);
 				
 				currentPage.update();
-				hideCover();
 				
 				document.getElementById("reg-username").value = "";
 				document.getElementById("reg-first_name").value = "";

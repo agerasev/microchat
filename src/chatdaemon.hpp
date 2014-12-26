@@ -42,7 +42,7 @@ public:
 	int respondGet(MHD_Connection *con, const char *url) override
 	{
 		printf ("GET responded from %s\n", url);
-		// MHD_get_connection_values (con, MHD_HEADER_KIND, &print_out_key, NULL);
+		MHD_get_connection_values (con, MHD_HEADER_KIND, &print_out_key, NULL);
 		
 		std::string path(url);
 		
@@ -80,10 +80,8 @@ public:
 	
 	int respondPost(MHD_Connection *con, const char *url, void *data, int size) override
 	{
-		printf ("POST responded\n");
-		// MHD_get_connection_values (con, MHD_HEADER_KIND, &print_out_key, NULL);
-		
-		cout << "+ stert responding" << endl;
+		printf ("GET responded from %s\n", url);
+		MHD_get_connection_values (con, MHD_HEADER_KIND, &print_out_key, NULL);
 		
 		std::string query;
 		std::string answer;
@@ -91,11 +89,9 @@ public:
 		{
 			query = std::string(static_cast<const char*>(data), size);
 			
-			cout << "+ execute query" << endl;
 			Database::Table *table = db->executeQuery(query);
 			db->commit();
 			
-			cout << "+ construct answer" << endl;
 			answer = "[";
 			answer += "[";
 			const Database::Row *row = table->getHeader();
@@ -128,7 +124,6 @@ public:
 		}
 		catch(SQLException &e)
 		{
-			cout << "+ catch exception" << endl;
 			answer = std::string(e.what());
 			if(!answer.size())
 			{
@@ -136,10 +131,8 @@ public:
 			}
 		}
 		
-		cout << "+ send data" << endl;
 		sendData(con,const_cast<char*>(answer.data()),answer.size(),"text/plain");
 		
-		cout << "+ return" << endl;
 		return YES;
 	}
 };
