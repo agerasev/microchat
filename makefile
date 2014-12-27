@@ -1,4 +1,4 @@
-SRCDIR = src
+SRCDIR = source
 OBJDIR = obj
 HEADERS = \
 	daemon.hpp \
@@ -6,7 +6,11 @@ HEADERS = \
 	chatdaemon.hpp \
 	chatdatabase.hpp
 SOURCES = \
-	main.cpp
+	main.cpp \
+	daemon.cpp \
+	database.cpp \
+	chatdaemon.cpp \
+	chatdatabase.cpp
 
 OBJ = $(SOURCES:%.cpp=$(OBJDIR)/%.cpp.o)
 SRC = $(SOURCES:%=$(SRCDIR)/%)
