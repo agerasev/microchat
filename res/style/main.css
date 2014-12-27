@@ -19,6 +19,21 @@ div
 	padding: 0;
 }
 
+h1
+{
+	font-weight: normal;
+}
+
+h2
+{
+	font-weight: normal;
+}
+
+h3
+{
+	font-weight: normal;
+}
+
 #content-container
 {
 	margin-left: 4.8%;
@@ -82,14 +97,18 @@ textarea
 	resize: none;
 }
 
-#account-info
+input
 {
-	padding: 8% 8%;
+	border: 3px solid #cccccc;
 }
 
 #account-page
 {
-	width: 100%;
+	background-color: #ffffff;
+	box-sizing: border-box;
+	margin: 16px 20% 0 14%;
+	padding: 24px 4%;
+	width: 64%;
 	height: auto;
 	display: none;
 }
@@ -110,9 +129,15 @@ textarea
 
 #about-page
 {
-	width: 100%;
+	background-color: #ffffff;
+	box-sizing: border-box;
+	margin: 16px 20% 0 14%;
+	padding: 24px 10%;
+	font-size: 24px;
+	width: auto;
 	height: auto;
 	display: none;
+	text-align: center;
 }
 
 .unit-element
@@ -165,135 +190,4 @@ textarea
 	background-size: contain;
 	height: 128px;
 	width: 128px;
-}
-
-#content-cover
-{
-	position: fixed;
-	width: 100%;
-	height: 100%;
-	opacity: 0.5;
-	background-color: #000000;
-	top: 0;
-	left: 0;
-}
-
-#prompt-cover
-{
-	position: fixed;
-	width: 100%;
-	height: 100%;
-	opacity: 0.5;
-	background-color: #000000;
-	top: 0;
-	left: 0;
-	display: none;
-}
-
-#alert-cover
-{
-	position: fixed;
-	width: 100%;
-	height: 100%;
-	opacity: 0.5;
-	background-color: #000000;
-	top: 0;
-	left: 0;
-	display: none;
-}
-
-#sign-prompt
-{
-	position: fixed;
-	width: 60%;
-	height: 80%;
-	left: 20%;
-	top: 10%;
-	display: inline-block;
-	vertical-align: top;
-}
-
-#register-field
-{
-	position: fixed;
-	right: 22%;
-	top: 12%;
-	background-color: #ffffff;
-	border: 3px solid #dddddd;
-	box-sizing: border-box;
-	padding: 10px;
-	width: 24%;
-	height: 76%;
-	display: inline-block;
-	text-align: center;
-}
-
-#sign-in-field
-{
-	position: fixed;
-	left: 22%;
-	top: 12%;
-	background-color: #ffffff;
-	border: 3px solid #dddddd;
-	box-sizing: border-box;
-	padding: 10px;
-	width: 26%;
-	height: 76%;
-	display: inline-block;
-	text-align: center;
-}
-
-.sign-table
-{
-	width: 100%;
-	text-align: left;
-}
-
-input
-{
-	border: 3px solid #cccccc;
-}
-
-.sign-input
-{
-	width: 100%;
-}
-
-.sign-button
-{
-	font-size: 20px;
-	padding: 8px;
-	margin: 12px;
-}
-
-#prompt
-{
-	position: fixed;
-	left: 20%;
-	top: 30%;
-	background-color: #ffffff;
-	border: 3px solid #dddddd;
-	box-sizing: border-box;
-	padding: 10px;
-	width: 60%;
-	height: 40%;
-	display: inline-block;
-	text-align: center;
-	display: none;
-}
-
-#alert
-{
-	position: fixed;
-	left: 20%;
-	top: 30%;
-	background-color: #ffffff;
-	border: 3px solid #dddddd;
-	box-sizing: border-box;
-	padding: 10px;
-	width: 60%;
-	height: 40%;
-	display: inline-block;
-	text-align: center;
-	display: none;
 }

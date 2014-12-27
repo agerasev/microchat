@@ -9,6 +9,27 @@ function createUser(id,uname,passwd)
 	return user;
 }
 
+function updateNames(username,first_name,last_name)
+{
+	document.getElementById("account-name").innerHTML = first_name + " " + last_name;
+	document.getElementById("account-username").innerHTML = username;
+	document.getElementById("account-fl-names").innerHTML = first_name + " " + last_name;
+}
+
+function updateCookies(username,password)
+{
+	var date = new Date(new Date().getTime() + 100*365*24*60*60*1000);
+	document.cookie = "username=" + username + "; path=/; expires=" + date.toUTCString();
+	document.cookie = "password=" + password + "; path=/; expires=" + date.toUTCString();
+}
+
+function deleteCookies()
+{
+	var date = new Date(new Date().getTime() - 100*365*24*60*60*1000);
+	document.cookie = "username=; path=/; expires=" + date.toUTCString();
+	document.cookie = "password=; path=/; expires=" + date.toUTCString();
+}
+
 function setUser(username,password)
 {
 	sendRequest(
@@ -22,14 +43,19 @@ function setUser(username,password)
 			{
 				var array;
 				eval("array = " + req.responseText + ";");
-				document.getElementById("account-info").innerHTML = array[1][1] + " " + array[1][2];
+				
+				if(array.length < 2)
+				{
+					alert("No such user");
+					return;
+				}
+				
+				updateNames(username,array[1][1],array[1][2]);
 				
 				currentUser = createUser(array[1][0],username,password);
 				hideCover();
 				
-				var date = new Date(new Date().getTime() + 365*24*60*60*1000);
-				document.cookie = "username=" + username + "; path=/; expires=" + date.toUTCString();
-				document.cookie = "password=" + password + "; path=/; expires=" + date.toUTCString();
+				updateCookies(username,password);
 			}
 			else
 			{
@@ -42,6 +68,7 @@ function setUser(username,password)
 function showCover()
 {
 	document.getElementById("content-cover").style.display = 'inline-block';
+	document.getElementById("sign-prompt").style.display = 'inline-block';
 }
 
 function hideCover()
@@ -79,6 +106,12 @@ function signIn()
 	);
 }
 
+function signOut()
+{
+	deleteCookies();
+	showCover();
+}
+
 function register()
 {
 	if(document.getElementById("reg-username").value.length == 0){alert("Username field is empty.");return;}
@@ -109,6 +142,69 @@ function register()
 				document.getElementById("reg-username").value = "";
 				document.getElementById("reg-first_name").value = "";
 				document.getElementById("reg-last_name").value = "";
+			}
+			else
+			{
+				alert(req.responseText);
+			}
+		}
+	);
+}
+
+function changeName()
+{
+	sendRequest(
+		document.URL + "/request",
+		"update accounts set first_name = '" + document.getElementById("change-first_name").value + 
+		"', last_name = '" + document.getElementById("change-last_name").value + "' where id = " + 
+		currentUser.id + ";",
+		function(req)
+		{
+			if(req.responseText == "Done")
+			{
+				updateNames(
+					currentUser.name,
+					document.getElementById("change-first_name").value,
+					document.getElementById("change-last_name").value
+				);
+				document.getElementById("change-first_name").value = "";
+				document.getElementById("change-last_name").value = "";
+			}
+			else
+			{
+				alert(req.responseText);
+			}
+		}
+	);
+}
+
+function changePassword()
+{
+	if(document.getElementById("change-password_old").value.length == 0){showAlert("Old password field is empty.");return;}
+	if(document.getElementById("change-password_new_1").value.length == 0){showAlert("New password field is empty.");return;}
+	if(
+		document.getElementById("change-password_new_1").value != 
+		document.getElementById("change-password_new_2").value
+	)
+	{
+		showAlert("Passwords don't match.");
+		return;
+	}
+	
+	sendRequest(
+		document.URL + "/request",
+		"update accounts set password = '" + document.getElementById("change-password_new_1").value + 
+		"' where id = " + currentUser.id + ";",
+		function(req)
+		{
+			currentUser.password = document.getElementById("change-password_new_1").value;
+			updateCookies(currentUser.name,currentUser.password);
+			if(req.responseText == "Done")
+			{
+				document.getElementById("change-password_old").value = "";
+				document.getElementById("change-password_new_1").value = "";
+				document.getElementById("change-password_new_2").value = "";
+				showAlert("Done");
 			}
 			else
 			{

@@ -1,0 +1,45 @@
+#account-name
+{
+	padding-top: 8%;
+}
+
+#account-signout
+{
+	padding-bottom: 6%;
+	display: inline-block;
+	font-size: 16px;
+}
+
+#account-image
+{
+	border: 3px solid #dddddd;
+	margin: 4px 0;
+	padding: 0;
+	background-image: url(user.png);
+	background-size: contain;
+	height: 128px;
+	width: 128px;
+}
+
+#other-account-page
+{
+	background-color: #ffffff;
+	box-sizing: border-box;
+	margin: 16px 20% 0 16%;
+	padding: 24px 4%;
+	width: 64%;
+	height: auto;
+	display: none;
+}
+
+#other-account-image
+{
+	border: 3px solid #dddddd;
+	margin: 4px 0;
+	padding: 0;
+	background-image: url(user.png);
+	background-size: contain;
+	height: 128px;
+	width: 128px;
+}
+

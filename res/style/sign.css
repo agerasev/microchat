@@ -1,0 +1,69 @@
+#content-cover
+{
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	opacity: 0.5;
+	background-color: #000000;
+	top: 0;
+	left: 0;
+}
+
+#sign-prompt
+{
+	position: fixed;
+	width: 60%;
+	height: 80%;
+	left: 20%;
+	top: 10%;
+	display: inline-block;
+	vertical-align: top;
+}
+
+#register-field
+{
+	position: fixed;
+	right: 22%;
+	top: 12%;
+	background-color: #ffffff;
+	border: 3px solid #dddddd;
+	box-sizing: border-box;
+	padding: 10px;
+	width: 24%;
+	height: 76%;
+	display: inline-block;
+	text-align: center;
+}
+
+#sign-in-field
+{
+	position: fixed;
+	left: 22%;
+	top: 12%;
+	background-color: #ffffff;
+	border: 3px solid #dddddd;
+	box-sizing: border-box;
+	padding: 10px;
+	width: 26%;
+	height: 76%;
+	display: inline-block;
+	text-align: center;
+}
+
+.sign-table
+{
+	width: 100%;
+	text-align: left;
+}
+
+.sign-input
+{
+	width: 100%;
+}
+
+.sign-button
+{
+	font-size: 20px;
+	padding: 8px;
+	margin: 12px;
+}

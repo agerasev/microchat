@@ -17,3 +17,11 @@ function createMessagePage(elem_id)
 	mpage.submitText = null;
 	return mpage;
 }
+
+function createAccountPage(elem_id)
+{
+	var apage = createPage(elem_id);
+	apage.id = null;
+	apage.select = null;
+	return apage;
+}

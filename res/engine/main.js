@@ -1,5 +1,6 @@
 var currentPage = null;
 var currentMessagePage = null;
+var currentAccountPage = null;
 var updater = null;
 
 var accountPage;
@@ -11,6 +12,7 @@ function initPages()
 	initConversationsPage();
 	
 	initMessagePage();
+	initAccountPage();
 	
 	accountPage = createPage("account-page");
 	aboutPage = createPage("about-page");
@@ -78,6 +80,12 @@ function changeMode(mode)
 		{
 			currentMessagePage.select(mode.substring(4));
 			currentPage = currentMessagePage;
+			currentPage.enable();
+		}
+		else if((/^user/).test(mode))
+		{
+			currentAccountPage.select(mode.substring(4));
+			currentPage = currentAccountPage;
 			currentPage.enable();
 		}
 		break;

@@ -3,14 +3,18 @@
 	<head>
 		<meta charset="utf-8">
 		<title>MicroChat</title>
-		<link rel="stylesheet" href="style/style.css"/>
+		<link rel="stylesheet" href="style/main.css"/>
 		<link rel="stylesheet" href="style/message.css"/>
+		<link rel="stylesheet" href="style/sign.css"/>
+		<link rel="stylesheet" href="style/account.css"/>
+		<link rel="stylesheet" href="style/alert.css"/>
 		<script src="engine/classes.js"></script>
 		<script src="engine/request.js"></script>
 		<script src="engine/format.js"></script>
 		<script src="engine/alert.js"></script>
 		<script src="engine/sign.js"></script>
 		<script src="engine/message-page.js"></script>
+		<script src="engine/account-page.js"></script>
 		<script src="engine/people-page.js"></script>
 		<script src="engine/conversations-page.js"></script>
 		<script src="engine/main.js"></script>
@@ -23,7 +27,51 @@
 			
 			<!-- Account page -->
 			<div id="account-page">
-				Account page
+				<table class="account-table">
+					<tr>
+						<td><div id="account-image"></div></td>
+						<td>
+							<h3 id="account-username"></h3>
+							<h3 id="account-fl-names"></h3>
+						</td>
+					</tr>
+					<tr>
+						<td>First Name: </td>
+						<td><input type="text" id="change-first_name"></td>
+					</tr>
+					<tr>
+						<td>Last Name: </td>
+						<td><input type="text" id="change-last_name"></td>
+					</tr>
+					<tr>
+						<td><div class="button" id="apply-name-change" onclick="changeName();">Change name</div></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td><p></p></td>
+					</tr>
+					<tr>
+						<td>Old password: </td>
+						<td><input class="sign-input" type="password" id="change-password_old"></td>
+					</tr>
+					<tr>
+						<td>New password: </td>
+						<td><input class="sign-input" type="password" id="change-password_new_1"></td>
+					</tr>
+					<tr>
+						<td>Confirm new password: </td>
+						<td><input class="sign-input" type="password" id="change-password_new_2"></td>
+					</tr>
+					<tr>
+						<td><div class="button" id="apply-password-change" onclick="changePassword();">Change password</div></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td><p></p></td>
+					</tr>
+				</table>
 			</div>
 			
 			<!-- People page -->
@@ -38,8 +86,53 @@
 			
 			<!-- About page -->
 			<div id="about-page">
-				<h1>Hello, Browser!</h1>
+				<h3>MicroChat</h3>
+				HTML client connected with C++ server powered by <a href="http://www.gnu.org/software/libmicrohttpd/">libmicrohttpd</a> and 
+				<a href="http://www.mysql.com/">MySQL</a>. You can find the source code at <a href="https://github.com/nthend/microchat">GitHub</a>.
 			</div>
+			
+			<!-- Other account page -->
+			<div id="other-account-page">
+				<table class="other-account-table">
+					<tr>
+						<td><div id="other-account-image"></div></td>
+						<td>
+							<h3 id="other-account-username"></h3>
+							<h3 id="other-account-fl-names"></h3>
+						</td>
+					</tr>
+				</table>
+			</div>
+			
+			<!-- Message page -->
+			<div id="message-page">
+				<div id="messages-history">
+				</div>
+				<div id="messages-input-placeholder">
+				</div>
+				<div id="input-text-pannel">
+					<textarea 
+						id="input-text-area"
+						onkeydown=
+						"
+							if(event.keyCode == 13)
+							{
+								currentMessagePage.submitText();
+								return false;
+							}
+						"
+					></textarea>
+					<div 
+						class="button" 
+						id="input-text-submit-button" 
+						onclick="currentMessagePage.submitText();"
+					>
+					submit
+					</div>
+				</div>
+			</div>
+			
+		</div>
 			
 			<!-- Message page -->
 			<div id="message-page">
@@ -76,11 +169,19 @@
 			<div id="control-element-list">
 				<div 
 					class="control-element" 
-					id="account-info" 
+					id="account-name" 
 					onclick="pushMode('account')"
 				>
 					Anonymous
 				</div>
+				<div 
+					class="control-element" 
+					id="account-signout" 
+					onclick="signOut('account')"
+				>
+					Sign out
+				</div>
+				<p></p>
 				<div class="control-element" onclick="pushMode('people')">
 					People
 				</div>
