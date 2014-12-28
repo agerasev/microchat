@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 #include <string>
 
@@ -44,8 +45,7 @@ public:
 	};
 	
 private:
-	/* table is heap allocated and must be deleted */
-	Table *convert(sql::ResultSet *res);
+	std::unique_ptr<Table> convert(sql::ResultSet *res);
 	
 private:
 	sql::Driver* driver;
@@ -57,8 +57,7 @@ public:
 	Database(const char *user, const char *url, const char *pass, const char *database);
 	virtual ~Database();
 	
-	/* Returns heap-allocated table which must be deleted */
-	Table *executeQuery(const std::string &query);
+	std::unique_ptr<Table> executeQuery(const std::string &query);
 	bool execute(const std::string &query);
 	
 	void commit();

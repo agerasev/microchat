@@ -8,40 +8,50 @@ function newConv()
 		"Enter conversation name:",
 		function (name)
 		{
+			if((name.match(/,/g) || []).length > 0)
+			{
+				showAlert("Name contains illegal characters.");
+				return false;
+			}
+			
 			conversationsPage.newPageName = name;
 			if(name.length == 0)
 			{
 				showAlert("Conversation name field is empty");
 				return false;
 			}
+			
 			sendRequest(
 				document.URL + "/request",
-				"select exists(select 1 from conversations where name = '" + name + "');",
+				"getConversationByName(" + name + ")",
 				function(req)
 				{
-					if((/1']]$/).test(req.responseText))
+					if(req.responseText[0] == "[")
 					{
-						showAlert("Conversation name '" + conversationsPage.newPageName + "' already exists");
-					}
-					else
-					if((/0']]$/).test(req.responseText))
-					{
-						sendRequest(
-							document.URL + "/request",
-							"insert into conversations(name,last_update) values('" + conversationsPage.newPageName + "',now());",
-							function(req)
-							{
-								if(req.responseText == "Done")
+						if((req.responseText.match(/\[/g) || []).length >= 3)
+						{
+							showAlert("Conversation name '" + conversationsPage.newPageName + "' already exists");
+						}
+						else
+						if((req.responseText.match(/\[/g) || []).length < 3)
+						{
+							sendRequest(
+								document.URL + "/request",
+								"addConversation(" + conversationsPage.newPageName + ")",
+								function(req)
 								{
-									showAlert("Conversation '" + conversationsPage.newPageName + "' successfully created");
-									currentPage.update();
+									if(req.responseText == "Done")
+									{
+										showAlert("Conversation '" + conversationsPage.newPageName + "' successfully created");
+										currentPage.update();
+									}
+									else
+									{
+										alert(req.responseText);
+									}
 								}
-								else
-								{
-									alert(req.responseText);
-								}
-							}
-						);
+							);
+						}
 					}
 					else
 					{
@@ -71,9 +81,14 @@ function initConversationsPage()
 	};
 	conversationsPage.update = function ()
 	{
+		if(currentUser == null)
+		{
+			return;
+		}
+		
 		sendRequest(
 			document.URL + "/request",
-			"select concat('conv',id) as a, name from conversations;",
+			"getAllConversations()",
 			function(req)
 			{
 				document.getElementById("conversations-page").innerHTML = 
@@ -81,7 +96,8 @@ function initConversationsPage()
 					"<div class='newconv-info'></div>" +
 					"<div class='unit-header'>New conversation</div>" +
 					"</div>";
-				document.getElementById("conversations-page").innerHTML += formConversations(req.responseText);
+				var array = modifyColumn(convertToArray(req.responseText),0,function(val){return "conv"+val;});
+				document.getElementById("conversations-page").innerHTML += formConversations(array);
 			}
 		);
 	};

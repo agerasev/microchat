@@ -34,9 +34,7 @@ function setUser(username,password)
 {
 	sendRequest(
 		document.URL + "/request",
-		"select id,first_name, last_name from accounts where username = '" +
-		username + "' and password = '" +
-		password + "';",
+		"getUserByNameAndPassword(" + username + "," + password + ")",
 		function(req)
 		{
 			if(req.responseText[0] == '[')
@@ -55,7 +53,7 @@ function setUser(username,password)
 				currentUser = createUser(array[1][0],username,password);
 				hideCover();
 				
-				updateCookies(username,password);
+				currentPage.update();
 			}
 			else
 			{
@@ -82,21 +80,26 @@ function signIn()
 	if(document.getElementById("sign-username").value.length == 0){showAlert("Username field is empty.");return;}
 	if(document.getElementById("sign-password").value.length == 0){showAlert("Password field is empty.");return;}
 	
+	updateCookies(document.getElementById("sign-username").value,document.getElementById("sign-password").value);
+	
 	sendRequest(
 		document.URL + "/request",
-		"select exists(select 1 from accounts where username = '" +
-		document.getElementById("sign-username").value + "' and password = '" +
-		document.getElementById("sign-password").value + "');",
+		"getUserByNameAndPassword(" +
+		document.getElementById("sign-username").value.replace(/,/g,"#") + "," +
+		document.getElementById("sign-password").value.replace(/,/g,"#") + ")",
 		function(req)
 		{
-			if((/1']]$/).test(req.responseText))
+			if(req.responseText[0] == "[")
 			{
-				setUser(document.getElementById("sign-username").value,document.getElementById("sign-password").value);
-			}
-			else
-			if((/0']]$/).test(req.responseText))
-			{
-				showAlert("There is no such combination of username and password.");
+				if((req.responseText.match(/\[/g) || []).length >= 3)
+				{
+					setUser(document.getElementById("sign-username").value,document.getElementById("sign-password").value);
+				}
+				else
+				if((req.responseText.match(/\[/g) || []).length < 3)
+				{
+					showAlert("There is no such combination of username and password.");
+				}
 			}
 			else
 			{
@@ -108,6 +111,7 @@ function signIn()
 
 function signOut()
 {
+	currentUser = null;
 	deleteCookies();
 	showCover();
 }
@@ -123,14 +127,24 @@ function register()
 		showAlert("Passwords don't match.");
 		return;
 	}
+	if((document.getElementById("reg-username").value.match(/,/g) || []).length > 0)
+	{
+		showAlert("Username contains illegal characters.");
+		return;
+	}
+	if((document.getElementById("reg-password_1").value.match(/,/g) || []).length > 0)
+	{
+		showAlert("Password contains illegal characters.");
+		return;
+	}
 	
 	sendRequest(
 		document.URL + "/request",
-		"insert into accounts(username,password,first_name,last_name) values('" +
-		document.getElementById("reg-username").value + "','" +
-		document.getElementById("reg-password_1").value + "','" +
-		document.getElementById("reg-first_name").value + "','" +
-		document.getElementById("reg-last_name").value + "');",
+		"addUser(" +
+		document.getElementById("reg-username").value + "," +
+		document.getElementById("reg-password_1").value + "," +
+		document.getElementById("reg-first_name").value.replace(/,/g,"#") + "," +
+		document.getElementById("reg-last_name").value.replace(/,/g,"#") + ")",
 		function(req)
 		{
 			if(req.responseText == "Done")
@@ -155,9 +169,9 @@ function changeName()
 {
 	sendRequest(
 		document.URL + "/request",
-		"update accounts set first_name = '" + document.getElementById("change-first_name").value + 
-		"', last_name = '" + document.getElementById("change-last_name").value + "' where id = " + 
-		currentUser.id + ";",
+		"updateUserNames(" + currentUser.id + "," + 
+		document.getElementById("change-first_name").value.replace(/,/g,"#") + "," +
+		document.getElementById("change-last_name").value.replace(/,/g,"#") + ")",
 		function(req)
 		{
 			if(req.responseText == "Done")
@@ -190,15 +204,20 @@ function changePassword()
 		showAlert("Passwords don't match.");
 		return;
 	}
+	if((document.getElementById("change-password_new_1").value.match(/,/g) || []).length > 0)
+	{
+		showAlert("Password contains illegal characters.");
+		return;
+	}
 	
 	sendRequest(
 		document.URL + "/request",
-		"update accounts set password = '" + document.getElementById("change-password_new_1").value + 
-		"' where id = " + currentUser.id + ";",
+		"updateUserPassword(" + currentUser.id + "," + document.getElementById("change-password_new_1").value + ")",
 		function(req)
 		{
 			currentUser.password = document.getElementById("change-password_new_1").value;
 			updateCookies(currentUser.name,currentUser.password);
+			
 			if(req.responseText == "Done")
 			{
 				document.getElementById("change-password_old").value = "";

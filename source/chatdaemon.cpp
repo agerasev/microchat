@@ -1,6 +1,10 @@
 #include <mysql_driver.h>
 #include <mysql_connection.h>
 
+#include <sstream>
+#include <functional>
+#include <cstring>
+
 #include <cppconn/driver.h>
 #include <cppconn/exception.h>
 #include <cppconn/resultset.h>
@@ -9,13 +13,29 @@
 
 #include "chatdaemon.hpp"
 
-int ChatDaemon::print_out_key (void *cls, enum MHD_ValueKind kind, const char *key, const char *value)
+#define COOKIE_BUFFER_SIZE 0x100
+
+static int findCookie(void *cls, enum MHD_ValueKind kind, const char *key, const char *value)
 {
-	printf ("%s: %s\n", key, value);
+	if(!strcmp(key,"Cookie"))
+	{
+		*static_cast<std::string*>(cls) = std::string(value,strlen(value));
+		return MHD_NO;
+	}
 	return MHD_YES;
 }
 
-bool ChatDaemon::checkExtension(const std::string &fn, const std::string &ext)
+static void replaceAll(std::string& str, const std::string& from, const std::string& to) {
+    if(from.empty())
+        return;
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+    }
+}
+
+static bool checkExtension(const std::string &fn, const std::string &ext)
 {
 	for(unsigned int i = 1; i <= ext.size(); ++i)
 	{
@@ -25,6 +45,125 @@ bool ChatDaemon::checkExtension(const std::string &fn, const std::string &ext)
 		}
 	}
 	return true;
+}
+
+static std::string formResponse(const Database::Table *table)
+{
+	std::string answer;
+	
+	answer = "[";
+	answer += "[";
+	const Database::Row *row = table->getHeader();
+	for(int i = 0; i < row->getSize(); ++i)
+	{
+		if(i)
+		{
+			answer += ",";
+		}
+		std::string value = row->getValue(i);
+		replaceAll(value,"\\","\\\\");
+		replaceAll(value,"'","\\'");
+		answer += '\'' + value + '\'';
+	}
+	answer += "]";
+	for(int j = 0; j < table->getRowsNumber(); ++j)
+	{
+		answer += ",";
+		answer += "[";
+		const Database::Row *row = table->getRow(j);
+		for(int i = 0; i < row->getSize(); ++i)
+		{
+			if(i)
+			{
+				answer += ",";
+			}
+			std::string value = row->getValue(i);
+			replaceAll(value,"\\","\\\\");
+			replaceAll(value,"'","\\'");
+			answer += '\'' + value + '\'';
+		}
+		answer += "]";
+	}
+	answer += "]";
+	
+	return answer;
+}
+
+static std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        elems.push_back(item);
+    }
+    return elems;
+}
+
+static std::vector<std::string> split(const std::string &s, char delim) {
+    std::vector<std::string> elems;
+    split(s, delim, elems);
+    return elems;
+}
+
+bool ChatDaemon::authenticate(const std::string &cookie)
+{
+	std::vector<std::string> values = split(cookie,';');
+	for(unsigned int i = 1; i < values.size(); ++i)
+	{
+		values[i].erase(0,1);
+	}
+	std::string name, passwd;
+	for(std::string &i : values)
+	{
+		std::vector<std::string> pair = split(i,'=');
+		// printf("%s\n",i.data());
+		if(pair[0] == "username")
+		{
+			name = pair[1];
+		}
+		else
+		if(pair[0] == "password")
+		{
+			passwd = pair[1];
+		}
+	}
+	// printf("%s %s\n",name.data(),passwd.data());
+	
+	bool exists;
+	try
+	{
+		exists = db->getUserByNameAndPassword(name,passwd)->getRowsNumber() > 0;
+	}
+	catch(sql::SQLException &e)
+	{
+		exists = false;
+	}
+	
+	return exists;
+}
+
+std::pair<std::string,std::vector<std::string>> ChatDaemon::parseRequest(std::string request)
+{
+	replaceAll(request,"\\","\\\\");
+	replaceAll(request,"'","\\'");
+	
+	std::string com, args;
+	
+	int lpos = request.find("(");
+	int rpos = request.find(")");
+	
+	com = request.substr(0,lpos);
+	args = request.substr(lpos+1,rpos-lpos-1);
+	
+	// std::cout << com << std::endl;
+	
+	std::vector<std::string> argv = split(args,',');
+	
+	for(std::string &i : argv)
+	{
+		replaceAll(i,"#",",");
+	}
+	
+	return std::pair<std::string,std::vector<std::string>>(com,argv);
 }
 
 ChatDaemon::ChatDaemon(ChatDatabase *database) : 
@@ -40,8 +179,7 @@ ChatDaemon::~ChatDaemon()
 
 int ChatDaemon::respondGet(MHD_Connection *con, const char *url)
 {
-	printf ("GET responded from %s\n", url);
-	MHD_get_connection_values (con, MHD_HEADER_KIND, &print_out_key, NULL);
+	// printf ("GET responded from %s\n", url);
 	
 	std::string path(url);
 	
@@ -79,47 +217,132 @@ int ChatDaemon::respondGet(MHD_Connection *con, const char *url)
 
 int ChatDaemon::respondPost(MHD_Connection *con, const char *url, void *data, int size)
 {
-	printf ("GET responded from %s\n", url);
-	MHD_get_connection_values (con, MHD_HEADER_KIND, &print_out_key, NULL);
+	// printf ("POST responded from %s\n", url);
+	
+	// char cookie_buffer[COOKIE_BUFFER_SIZE];
+	std::string cookie;
+	MHD_get_connection_values (con, MHD_HEADER_KIND, &findCookie, static_cast<void*>(&cookie));
+	
+	
+	std::string answer;
 	
 	std::string query;
-	std::string answer;
 	try
 	{
 		query = std::string(static_cast<const char*>(data), size);
 		
-		Database::Table *table = db->executeQuery(query);
+		auto pair = parseRequest(query);
+		
+		std::unique_ptr<Database::Table> table_ptr;
+		bool is_table = false;
+		int success = -1;
+		
+		std::string com = pair.first;
+		std::vector<std::string> argv = pair.second;
+		
+		if(com == "addUser" && argv.size() >= 4)
+		{
+			success = db->addUser(argv[0],argv[1],argv[2],argv[3]);
+		}
+		else
+		if(com == "getUserByName" && argv.size() >= 1)
+		{
+			table_ptr = db->getUserByName(argv[0]); is_table = true;
+		}
+		else
+		if(authenticate(cookie))
+		{
+			if(com == "getAllUsers")
+			{
+				table_ptr = db->getAllUsers(); is_table = true;
+			}
+			else
+			if(com == "getAllConversations")
+			{
+				table_ptr = db->getAllConversations(); is_table = true;
+			}
+			else
+			if(com == "getUserById" && argv.size() >= 1)
+			{
+				table_ptr = db->getUserById(argv[0]); is_table = true;
+			}
+			else
+			if(com == "getUserByNameAndPassword" && argv.size() >= 2)
+			{
+				table_ptr = db->getUserByNameAndPassword(argv[0],argv[1]); is_table = true;
+			}
+			else
+			if(com == "getConversationById" && argv.size() >= 1)
+			{
+				table_ptr = db->getConversationById(argv[0]); is_table = true;
+			}
+			else
+			if(com == "getConversationByName" && argv.size() >= 1)
+			{
+				table_ptr = db->getConversationByName(argv[0]); is_table = true;
+			}
+			else
+			if(com == "updateUserNames" && argv.size() >= 3)
+			{
+				success = db->updateUserNames(argv[0],argv[1],argv[2]);
+			}
+			else
+			if(com == "updateUserPassword" && argv.size() >= 2)
+			{
+				success = db->updateUserPassword(argv[0],argv[1]);
+			}
+			else
+			if(com == "addConversation" && argv.size() >= 1)
+			{
+				success = db->addConversation(argv[0]);
+			}
+			else
+			if(com == "getAllMessagesWithAuthor" && argv.size() >= 1)
+			{
+				table_ptr = db->getAllMessagesWithAuthor(argv[0]); is_table = true;
+			}
+			else
+			if(com == "getNewMessagesWithAuthor" && argv.size() >= 2)
+			{
+				table_ptr = db->getNewMessagesWithAuthor(argv[0],argv[1]); is_table = true;
+			}
+			else
+			if(com == "addMessage" && argv.size() >= 3)
+			{
+				success = db->addMessage(argv[0],argv[1],argv[2]);
+			}
+			else
+			{
+				success = -1;
+				answer = "Unknown command";
+			}
+		}
+		else
+		{
+			success = -2;
+			answer = "Authentication error";
+		}
 		db->commit();
 		
-		answer = "[";
-		answer += "[";
-		const Database::Row *row = table->getHeader();
-		for(int i = 0; i < row->getSize(); ++i)
+		if(is_table)
 		{
-			if(i)
-			{
-				answer += ",";
-			}
-			answer += '\'' + row->getValue(i) + '\'';
+			Database::Table *table = table_ptr.get();
+			answer = formResponse(table);
 		}
-		answer += "]";
-		for(int j = 0; j < table->getRowsNumber(); ++j)
+		else
 		{
-			answer += ",";
-			answer += "[";
-			const Database::Row *row = table->getRow(j);
-			for(int i = 0; i < row->getSize(); ++i)
+			if(success == 0)
 			{
-				if(i)
+				answer = "Done";
+			}
+			else
+			{
+				if(answer.size() == 0)
 				{
-					answer += ",";
+					answer = "Error";
 				}
-				answer += '\'' + row->getValue(i) + '\'';
 			}
-			answer += "]";
 		}
-		answer += "]";
-		delete table;
 	}
 	catch(sql::SQLException &e)
 	{

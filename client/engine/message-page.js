@@ -10,6 +10,8 @@ function initMessagePage()
 		currentMessagePage.lastTime = null;
 		currentMessagePage.scroll = true;
 		this.update();
+		stopUpdating();
+		startUpdating(1000);
 	};
 	
 	currentMessagePage.disable = function ()
@@ -19,6 +21,11 @@ function initMessagePage()
 	
 	currentMessagePage.update = function ()
 	{
+		if(currentUser == null)
+		{
+			return;
+		}
+		
 		if(currentMessagePage.scroll == null)
 		{
 			this.scroll = (Math.max(document.body.scrollTop,document.documentElement.scrollTop) + window.innerHeight) >= document.body.scrollHeight;
@@ -28,14 +35,22 @@ function initMessagePage()
 		{
 			sendRequest(
 				document.URL + "/request",
-				"select b.id,concat(a.first_name,' ',a.last_name) as author, b.text, b.send_time " + 
-				"from accounts as a, messages as b where a.id = b.author_id and " +
-				"conversation_id = " + currentMessagePage.convId + 
-				" order by send_time;",
+				"getAllMessagesWithAuthor(" + currentMessagePage.convId + ")",
 				function(req)
 				{
-					document.getElementById("messages-history").innerHTML = formMessages(req.responseText);
-					this.lastTime = getLastTime(req.responseText);
+					var array = convertToArray(req.responseText);
+					document.getElementById("messages-history").innerHTML = formMessages(array);
+					
+					var last_time = getLastTime(array);
+					if(last_time != null)
+					{
+						currentMessagePage.lastTime = last_time;
+					}
+					else
+					{
+						currentMessagePage.lastTime = '0000-00-00 00:00:00'
+					}
+					
 					if(currentMessagePage.scroll == true)
 					{
 						window.scrollTo(0,document.body.scrollHeight);
@@ -48,14 +63,18 @@ function initMessagePage()
 		{
 			sendRequest(
 				document.URL + "/request",
-				"select b.id,concat(a.first_name,' ',a.last_name) as author, b.text, b.send_time " + 
-				"from accounts as a, messages as b where a.id = b.author_id and " +
-				"conversation_id = " + currentMessagePage.convId + 
-				"and b.send_time > " + this.lastTime + " order by send_time;",
+				"getNewMessagesWithAuthor(" + currentMessagePage.convId + "," + currentMessagePage.lastTime + ")",
 				function(req)
 				{
-					document.getElementById("messages-history").innerHTML += formMessages(req.responseText);
-					this.lastTime = getLastTime(req.responseText);
+					var array = convertToArray(req.responseText);
+					document.getElementById("messages-history").innerHTML += formMessages(array);
+					
+					var last_time = getLastTime(array);
+					if(last_time != null)
+					{
+						currentMessagePage.lastTime = last_time;
+					}
+					
 					if(currentMessagePage.scroll == true)
 					{
 						window.scrollTo(0,document.body.scrollHeight);
@@ -78,10 +97,10 @@ function initMessagePage()
 		{
 			sendRequest(
 				document.URL + "/request",
-				"insert into messages(author_id,conversation_id,text,send_time) values(" + 
+				"addMessage(" + 
 				currentUser.id + "," +
-				currentMessagePage.convId + ",'" +
-				textarea.value + "',now());",
+				currentMessagePage.convId + "," +
+				textarea.value.replace(/,/g,"#") + ")",
 				function(req)
 				{
 					if(req.responseText == "Done")

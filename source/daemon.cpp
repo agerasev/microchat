@@ -20,7 +20,7 @@ int Daemon::request_received(
 {
 	Daemon *object = static_cast<Daemon*>(cls);
 	
-	printf("New %s request\n",method);
+	// printf("New %s request\n",method);
 	
 	if(!strcmp(method,"POST"))
 	{
@@ -30,7 +30,7 @@ int Daemon::request_received(
 			pp->data = nullptr;
 			pp->size = 0;
 			
-			printf("Post processor created\n");
+			// printf("Post processor created\n");
 			
 			*con_cls = static_cast<void*>(pp);
 			return MHD_YES;
@@ -40,7 +40,7 @@ int Daemon::request_received(
 		{
 			PostProcessor *pp = static_cast<PostProcessor*>(*con_cls);
 			
-			printf("Post iteration\n");
+			// printf("Post iteration\n");
 			
 			const char *data = upload_data;
 			int size = *upload_data_size;
@@ -65,16 +65,16 @@ int Daemon::request_received(
 				pp->size += size;
 			}
 			
-			printf("Uploaded data size: %lu\n",*upload_data_size);
+			// printf("Uploaded data size: %lu\n",*upload_data_size);
 			*upload_data_size = 0;
 			
 			return MHD_YES;
 		}
 		else
 		{
-			printf("Sending post back\n");
+			// printf("Sending post back\n");
 			PostProcessor *pp = static_cast<PostProcessor*>(*con_cls);
-			printf("Total data size: %d\n",pp->size);
+			// printf("Total data size: %d\n",pp->size);
 			return object->respondPost(connection,url,pp->data,pp->size);
 		}
 	}
@@ -92,7 +92,7 @@ int Daemon::request_completed(
 	void **con_cls, enum MHD_RequestTerminationCode toe
 )
 {
-	printf("Request completed\n");
+	// printf("Request completed\n");
 	if(!con_cls)
 	{
 		PostProcessor *pp = static_cast<PostProcessor*>(*con_cls);

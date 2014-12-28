@@ -14,7 +14,7 @@ int main ()
 	ChatDatabase database;
 	ChatDaemon daemon(&database);
 
-	printf("server started.\n");
+	printf("server started.\nenter 'exit' to stop server.\n");
 	
 	std::string com;
 	while(com != "exit")

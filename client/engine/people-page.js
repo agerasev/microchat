@@ -16,18 +16,24 @@ function initPeoplePage()
 	};
 	peoplePage.update = function ()
 	{
+		if(currentUser == null)
+		{
+			return;
+		}
+		
 		sendRequest(
 			document.URL + "/request",
-			"select concat('user',id) as a, concat(first_name,' ',last_name) as b from accounts;",
+			"getAllUsers()",
 			function(req)
 			{
-				document.getElementById("people-page").innerHTML = formUsers(req.responseText);
+				var array = convertToArray(req.responseText);
+				var newarray = new Array(array.length);
+				for(var i = 0; i < array.length; ++i)
+				{
+					newarray[i] = ["user"+array[i][0],array[i][2]+" "+array[i][3]];
+				}
+				document.getElementById("people-page").innerHTML = formUsers(newarray);
 			}
 		);
 	};
-}
-
-function selectUser(userId)
-{
-	
 }

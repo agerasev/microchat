@@ -1,5 +1,10 @@
 #pragma once
 
+#include <vector>
+#include <string>
+#include <memory>
+#include <utility>
+
 #include "daemon.hpp"
 
 #include "chatdatabase.hpp"
@@ -7,11 +12,10 @@
 class ChatDaemon : public Daemon
 {
 private:
-	static int print_out_key (void *cls, enum MHD_ValueKind kind, const char *key, const char *value);
-	static bool checkExtension(const std::string &fn, const std::string &ext);
-	
-private:
 	ChatDatabase *db;
+	
+	bool authenticate(const std::string &cookie);
+	std::pair<std::string,std::vector<std::string>> parseRequest(std::string request);
 
 public:
 	ChatDaemon(ChatDatabase *database);

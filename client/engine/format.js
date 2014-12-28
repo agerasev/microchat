@@ -1,4 +1,4 @@
-function formTable(array_string)
+function convertToArray(array_string)
 {
 	var array;
 	if(array_string[0] == '[')
@@ -9,6 +9,11 @@ function formTable(array_string)
 	{
 		return array_string;
 	}
+	return array;
+}
+
+function formTable(array)
+{
 	if(!Array.isArray(array))
 	{
 		return array;
@@ -41,17 +46,8 @@ function formTable(array_string)
 	return table;
 }
 
-function formUnits(array_string, outer_div, inner_divs, prev_text, post_text)
+function formUnits(array, outer_div, inner_divs, prev_text, post_text)
 {
-	var array;
-	if(array_string[0] == '[')
-	{
-		eval("array = " + array_string + ";");
-	}
-	else
-	{
-		return array_string;
-	}
 	if(!Array.isArray(array))
 	{
 		return array;
@@ -93,38 +89,57 @@ function formUnits(array_string, outer_div, inner_divs, prev_text, post_text)
 	return table;
 }
 
-function formUsers(array_string)
+function modifyColumn(array,cnum,func)
+{
+	if(!Array.isArray(array))
+	{
+		return;
+	}
+	for(var j = 0; j < array.length; ++j)
+	{
+		if(!Array.isArray(array[j]) || array[j].length <= cnum)
+		{
+			return;
+		}
+		array[j][cnum] = func(array[j][cnum]);
+	}
+	return array;
+}
+
+function formUsers(array)
 {
 	return formUnits(
-		array_string,
+		array,
 		"class='unit-element' onclick='pushMode(this.id)'",
 		["class='unit-header'"],
 		"<div class='user-info'></div>"
 	);
 }
 
-function formConversations(array_string)
+function formConversations(array)
 {
 	return formUnits(
-		array_string,
+		array,
 		"class='unit-element' onclick='pushMode(this.id)'",
 		["class='unit-header'"],
 		"<div class='conv-info'></div>"
 	);
 }
 
-function formMessages(array_string)
+function formMessages(array)
 {
 	return formUnits(
-		array_string,
+		array,
 		"class='message'",
 		["class='message-author'","class='message-text'","class='message-time'"]
 	);
 }
 
-function getLastTime(array_string)
+function getLastTime(array)
 {
-	var array;
-	eval("array = " + array_string + ";");
-	return array[array.length-1][3];
+	if(array.length > 1)
+	{
+		return array[array.length-1][3];
+	}
+	return null;
 }

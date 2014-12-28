@@ -2,6 +2,7 @@
 #include <sstream>
 #include <stdexcept>
 
+#include <memory>
 #include <vector>
 #include <string>
 
@@ -75,8 +76,7 @@ int Database::Table::getRowsSize() const
 	return row_size;
 }
 
-/* table is heap allocated and must be deleted */
-Database::Table *Database::convert(ResultSet *res)
+std::unique_ptr<Database::Table> Database::convert(ResultSet *res)
 {
 	ResultSetMetaData *resmd = res->getMetaData();
 	
@@ -97,7 +97,7 @@ Database::Table *Database::convert(ResultSet *res)
 		table->pushRow(row);
 	}
 	
-	return table;
+	return std::unique_ptr<Database::Table>(table);
 }
 
 Database::Database(const char *user, const char *url, const char *pass, const char *database)
@@ -114,11 +114,10 @@ Database::~Database()
 	delete con;
 }
 
-/* Returns heap-allocated table which must be deleted */
-Database::Table *Database::executeQuery(const string &query)
+std::unique_ptr<Database::Table> Database::executeQuery(const string &query)
 {
 	ResultSet *res = stmt->executeQuery(query.data());
-	Table *table = convert(res);
+	std::unique_ptr<Table> table = convert(res);
 	delete res;
 	return table;
 }

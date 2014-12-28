@@ -16,10 +16,14 @@ function initAccountPage()
 	
 	currentAccountPage.update = function ()
 	{
+		if(currentUser == null)
+		{
+			return;
+		}
+		
 		sendRequest(
 			document.URL + "/request",
-			"select username,first_name, last_name from accounts where id = " +
-			this.id + ";",
+			"getUserById(" + this.id + ")",
 			function(req)
 			{
 				if(req.responseText[0] == '[')

@@ -56,6 +56,8 @@ function pushMode(mode)
 
 function changeMode(mode)
 {
+	stopUpdating();
+	startUpdating(5000);
 	if(currentPage != null)
 	{
 		currentPage.disable();
@@ -102,18 +104,25 @@ function update_placeholders()
 	document.getElementById("messages-input-placeholder").style.height = document.getElementById("input-text-pannel").offsetHeight + "px";
 }
 
+function stopUpdating()
+{
+	clearInterval(updater);
+}
+
+function startUpdating(interval)
+{
+	updater = setInterval(function()
+	{
+		if(currentPage != null && currentUser != null)
+		{
+			currentPage.update();
+		}
+	}, interval);
+}
+
 window.onload = function()
 {
 	initPages();
-	
-	if(window.location.search != "")
-	{
-		pushMode(window.location.search.slice(1));
-	}
-	else
-	{
-		pushMode("people");
-	}
 	
 	if(document.cookie.match(/username=[^;]*/) != null)
 	{
@@ -126,13 +135,14 @@ window.onload = function()
 		}
 	}
 	
-	var updater = setInterval(function()
+	if(window.location.search != "")
 	{
-		if(currentPage != null)
-		{
-			currentPage.update();
-		}
-	}, 1000);
+		pushMode(window.location.search.slice(1));
+	}
+	else
+	{
+		pushMode("people");
+	}
 };
 
 window.onresize = function()
