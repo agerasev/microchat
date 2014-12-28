@@ -17,10 +17,13 @@ SRC = $(SOURCES:%=$(SRCDIR)/%)
 HDR = $(HEADERS:%=$(SRCDIR)/%)
 BIN = run
 
-all: $(BIN)
+all: $(OBJDIR) $(BIN)
 
-$(BIN) : $(OBJ)
+$(BIN): $(OBJ)
 	g++ -Wall -lmicrohttpd -lmysqlcppconn $^ -o $@
 
 $(OBJDIR)/%.cpp.o: $(SRCDIR)/%.cpp $(HDR)
 	g++ -Wall -c -std=c++11 $< -o $@
+
+$(OBJDIR):
+	mkdir $(OBJDIR)

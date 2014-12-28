@@ -32,6 +32,7 @@ function deleteCookies()
 
 function setUser(username,password)
 {
+	updateCookies(username,password);
 	sendRequest(
 		document.URL + "/request",
 		"getUserByNameAndPassword(" + username + "," + password + ")",
@@ -44,6 +45,7 @@ function setUser(username,password)
 				
 				if(array.length < 2)
 				{
+					deleteCookies();
 					alert("No such user");
 					return;
 				}
@@ -57,6 +59,7 @@ function setUser(username,password)
 			}
 			else
 			{
+				deleteCookies();
 				alert(req.responseText);
 			}
 		}
@@ -79,8 +82,6 @@ function signIn()
 {
 	if(document.getElementById("sign-username").value.length == 0){showAlert("Username field is empty.");return;}
 	if(document.getElementById("sign-password").value.length == 0){showAlert("Password field is empty.");return;}
-	
-	updateCookies(document.getElementById("sign-username").value,document.getElementById("sign-password").value);
 	
 	sendRequest(
 		document.URL + "/request",

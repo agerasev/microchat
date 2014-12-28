@@ -13,8 +13,6 @@
 
 #include "chatdaemon.hpp"
 
-#define COOKIE_BUFFER_SIZE 0x100
-
 static int findCookie(void *cls, enum MHD_ValueKind kind, const char *key, const char *value)
 {
 	if(!strcmp(key,"Cookie"))
@@ -109,12 +107,19 @@ bool ChatDaemon::authenticate(const std::string &cookie)
 	std::vector<std::string> values = split(cookie,';');
 	for(unsigned int i = 1; i < values.size(); ++i)
 	{
-		values[i].erase(0,1);
+		if(values[i].size() > 0)
+		{
+			values[i].erase(0,1);
+		}
 	}
 	std::string name, passwd;
 	for(std::string &i : values)
 	{
 		std::vector<std::string> pair = split(i,'=');
+		if(pair.size() < 2)
+		{
+			continue;
+		}
 		// printf("%s\n",i.data());
 		if(pair[0] == "username")
 		{
@@ -126,7 +131,7 @@ bool ChatDaemon::authenticate(const std::string &cookie)
 			passwd = pair[1];
 		}
 	}
-	// printf("%s %s\n",name.data(),passwd.data());
+	//printf("%s %s\n",name.data(),passwd.data());
 	
 	bool exists;
 	try
@@ -219,7 +224,6 @@ int ChatDaemon::respondPost(MHD_Connection *con, const char *url, void *data, in
 {
 	// printf ("POST responded from %s\n", url);
 	
-	// char cookie_buffer[COOKIE_BUFFER_SIZE];
 	std::string cookie;
 	MHD_get_connection_values (con, MHD_HEADER_KIND, &findCookie, static_cast<void*>(&cookie));
 	
@@ -245,9 +249,9 @@ int ChatDaemon::respondPost(MHD_Connection *con, const char *url, void *data, in
 			success = db->addUser(argv[0],argv[1],argv[2],argv[3]);
 		}
 		else
-		if(com == "getUserByName" && argv.size() >= 1)
+		if(com == "getUserByNameAndPassword" && argv.size() >= 2)
 		{
-			table_ptr = db->getUserByName(argv[0]); is_table = true;
+			table_ptr = db->getUserByNameAndPassword(argv[0],argv[1]); is_table = true;
 		}
 		else
 		if(authenticate(cookie))
@@ -267,9 +271,9 @@ int ChatDaemon::respondPost(MHD_Connection *con, const char *url, void *data, in
 				table_ptr = db->getUserById(argv[0]); is_table = true;
 			}
 			else
-			if(com == "getUserByNameAndPassword" && argv.size() >= 2)
+			if(com == "getUserByName" && argv.size() >= 1)
 			{
-				table_ptr = db->getUserByNameAndPassword(argv[0],argv[1]); is_table = true;
+				table_ptr = db->getUserByName(argv[0]); is_table = true;
 			}
 			else
 			if(com == "getConversationById" && argv.size() >= 1)
