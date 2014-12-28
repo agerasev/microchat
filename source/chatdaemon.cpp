@@ -102,7 +102,7 @@ static std::vector<std::string> split(const std::string &s, char delim) {
     return elems;
 }
 
-bool ChatDaemon::authenticate(const std::string &cookie)
+bool ChatDaemon::authenticate(const std::string &cookie, std::string &id)
 {
 	std::vector<std::string> values = split(cookie,';');
 	for(unsigned int i = 1; i < values.size(); ++i)
@@ -133,10 +133,16 @@ bool ChatDaemon::authenticate(const std::string &cookie)
 	}
 	//printf("%s %s\n",name.data(),passwd.data());
 	
-	bool exists;
+	bool exists = false;
+	
 	try
 	{
-		exists = db->getUserByNameAndPassword(name,passwd)->getRowsNumber() > 0;
+		auto table = db->getUserByNameAndPassword(name,passwd);
+		exists = (table->getRowsNumber() > 0);
+		if(exists)
+		{
+			id = table->getRow(0)->getValue(0);
+		}
 	}
 	catch(sql::SQLException &e)
 	{
@@ -241,6 +247,8 @@ int ChatDaemon::respondPost(MHD_Connection *con, const char *url, void *data, in
 		bool is_table = false;
 		int success = -1;
 		
+		std::string id;
+		
 		std::string com = pair.first;
 		std::vector<std::string> argv = pair.second;
 		
@@ -254,7 +262,7 @@ int ChatDaemon::respondPost(MHD_Connection *con, const char *url, void *data, in
 			table_ptr = db->getUserByNameAndPassword(argv[0],argv[1]); is_table = true;
 		}
 		else
-		if(authenticate(cookie))
+		if(authenticate(cookie,id))
 		{
 			if(com == "getAllUsers")
 			{
@@ -286,12 +294,12 @@ int ChatDaemon::respondPost(MHD_Connection *con, const char *url, void *data, in
 				table_ptr = db->getConversationByName(argv[0]); is_table = true;
 			}
 			else
-			if(com == "updateUserNames" && argv.size() >= 3)
+			if(com == "updateUserNames" && argv.size() >= 3 && argv[0] == id)
 			{
 				success = db->updateUserNames(argv[0],argv[1],argv[2]);
 			}
 			else
-			if(com == "updateUserPassword" && argv.size() >= 2)
+			if(com == "updateUserPassword" && argv.size() >= 2 && argv[0] == id)
 			{
 				success = db->updateUserPassword(argv[0],argv[1]);
 			}
@@ -311,7 +319,7 @@ int ChatDaemon::respondPost(MHD_Connection *con, const char *url, void *data, in
 				table_ptr = db->getNewMessagesWithAuthor(argv[0],argv[1]); is_table = true;
 			}
 			else
-			if(com == "addMessage" && argv.size() >= 3)
+			if(com == "addMessage" && argv.size() >= 3 && argv[0] == id)
 			{
 				success = db->addMessage(argv[0],argv[1],argv[2]);
 			}

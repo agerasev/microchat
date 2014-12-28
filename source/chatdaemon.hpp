@@ -14,7 +14,7 @@ class ChatDaemon : public Daemon
 private:
 	ChatDatabase *db;
 	
-	bool authenticate(const std::string &cookie);
+	bool authenticate(const std::string &cookie, std::string &name);
 	std::pair<std::string,std::vector<std::string>> parseRequest(std::string request);
 
 public:
