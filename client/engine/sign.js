@@ -155,6 +155,8 @@ function register()
 				currentPage.update();
 				
 				document.getElementById("reg-username").value = "";
+				document.getElementById("reg-password_1").value = "";
+				document.getElementById("reg-password_2").value = "";
 				document.getElementById("reg-first_name").value = "";
 				document.getElementById("reg-last_name").value = "";
 			}
