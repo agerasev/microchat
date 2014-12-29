@@ -105,7 +105,7 @@ function initMessagePage()
 				{
 					if(req.responseText == "Done")
 					{
-						currentMessagePage.update();
+						// currentMessagePage.update();
 					}
 					else
 					{
