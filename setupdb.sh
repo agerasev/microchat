@@ -2,7 +2,11 @@
 echo "Creating database and user..."
 
 echo "Enter your MySQL root password:"
-echo "create database if not exists microchatdb; grant all on microchatdb.* to microchat@localhost;" | mysql -u root -p
+echo \
+"create user if not exists microchat@localhost;" \
+"create database if not exists microchatdb;" \
+"grant all on microchatdb.* to microchat@localhost;" \
+| mysql -u root -p
 
 echo "Creating tables..."
 
